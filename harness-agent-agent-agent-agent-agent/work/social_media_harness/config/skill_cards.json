@@ -1,0 +1,718 @@
+{
+  "version": "1.1",
+  "domain": "social_media_disaster_communication",
+  "description": "社交媒体灾害信息传播数据分析 Harness 的 Agent Skill 配置。配置采用 prompt_protocol 承载正式工作说明书，兼容销售数据分析类 Skill 的 role/task/constraints/output/self_check 写法。",
+  "workflow": [
+    {"stage": "read", "agent": "reader_agent"},
+    {"stage": "validate_after_read", "agent": "validator_agent"},
+    {"stage": "analyze", "agent": "analyst_agent"},
+    {"stage": "chart", "agent": "chart_agent"},
+    {"stage": "resolve", "agent": "resolver_agent"},
+    {"stage": "design", "agent": "design_agent"}
+  ],
+  "sales_skill_template_reference": {
+    "source_file": "销售额数据源.xlsx",
+    "purpose": "作为将本 Harness 迁移到销售分析场景时的 Skill 模板参考。",
+    "skills": {
+      "sales_extract_skill": {
+        "role": "你是资深数据分析师，精通销售数据聚合与统计解读。",
+        "task": "对销售额数据源.xlsx进行数据聚合，输出10个分析数据集 + 10条局部数据解读。",
+        "constraints": [
+          "利润率必须以百分比输出（12.47，不是0.1247）",
+          "金额单位：元（不转万元，万元换算在制图Skill完成）",
+          "JOIN策略：LEFT JOIN退货表，禁止INNER JOIN",
+          "时间范围：2021-01 到 2024-12，共48个月"
+        ],
+        "data_output": [
+          "月度销售趋势",
+          "年度销售汇总",
+          "地区销售对比",
+          "品类细分同比",
+          "年度利润率",
+          "品类利润率趋势",
+          "地区利润率",
+          "技术类年度",
+          "技术类月度",
+          "技术子类别"
+        ],
+        "insight_output": {
+          "rule": "每个数据集聚合完成后，立即生成1条局部解读。",
+          "format": "<最显著的变化> + <量化数字> + <方向信号>",
+          "scope": "只做统计事实陈述，不做策略建议。",
+          "max_length_cn": 30,
+          "forbidden_words": ["较好", "较差", "明显", "一定程度上", "有所"],
+          "examples_good": [
+            "2024年销售额5,462万，同比+28.7%，为四年最高增速",
+            "家具类2024年利润率9.76%，较2023年下跌3.89pp，连续两年下滑",
+            "技术子类别中设备增速最高(+38.9%)，复印机贡献销售额第一"
+          ],
+          "examples_bad": [
+            "2024年销售表现较好",
+            "家具类利润率有所下降"
+          ]
+        },
+        "output_format": {
+          "data": "{...10个数据集...}",
+          "insights": {
+            "monthly": "xxx",
+            "by_year": "xxx",
+            "reg_yoy": "xxx",
+            "cat_yoy": "xxx",
+            "profit_yr": "xxx",
+            "cat_profit": "xxx",
+            "reg_profit": "xxx",
+            "tech_yr": "xxx",
+            "tech_mo": "xxx",
+            "tech_sub": "xxx"
+          }
+        },
+        "self_check": [
+          "48个月数据完整（2021-01 到 2024-12）",
+          "月度合计 ≈ 年度合计（误差<1%）",
+          "每条insight包含至少一个具体数字",
+          "利润率为百分比格式（12.47）"
+        ]
+      },
+      "sales_chart_skill": {
+        "role": "你是ECharts 5.x可视化工程师，遵循麦肯锡配色规范。",
+        "input": [
+          "data：来自取数Skill的10个数据集",
+          "insights：来自取数Skill的10条局部解读",
+          "insights已经过取数Skill验证，直接使用，不要重新计算或改写"
+        ],
+        "task": "为每个数据集生成ECharts option配置，共10张图。",
+        "title_rule": [
+          "图表主标题 = 对应的 insight 文本（结论句，直接复用）",
+          "图表副标题 = 数据来源Sheet名（灰色小字）",
+          "禁止用描述句做标题（如'2021-2024年月度销售趋势'）"
+        ],
+        "chart_type_rules": [
+          "时序数据 → 折线图/面积图（禁用饼图）",
+          "类别对比 ≤5类 → 纵向柱状图",
+          "类别对比 ≥6类 → 横向条形图（禁用饼图）",
+          "量+率同时展示 → 双Y轴组合（柱+线）",
+          "多维度趋势对比 → 多折线（禁用堆叠柱）"
+        ],
+        "axis_rules": [
+          "柱状图Y轴从0开始",
+          "Y轴最大值 = 数据最大值 × 1.2",
+          "双Y轴：右轴min/max必须独立设置，禁止依赖ECharts自动缩放",
+          "月度超24个点：X轴标签每季度显示一次"
+        ],
+        "color_palette": {
+          "primary": ["#003366", "#0073CF", "#5AB4E0"],
+          "accent": ["#E63329", "#F7941D", "#00A551"],
+          "forbidden": "禁止使用色板以外的颜色"
+        },
+        "label_rules": [
+          "最多标注3个关键点（最新值、峰值、基准对比值）",
+          "fontWeight:'bold'，fontSize:12",
+          "数据点>20时关闭逐点标注"
+        ],
+        "self_check": [
+          "每张图标题是结论句（含数字）",
+          "Y轴最大值 > 数据最大值",
+          "双Y轴右轴min/max已独立设置",
+          "所有颜色在规范色板内"
+        ]
+      },
+      "sales_design_skill": {
+        "role": "你是数据报告设计师 + 业务分析顾问，负责报告组装和全局战略解读。",
+        "input": [
+          "charts：10个ECharts option（含图表标题/结论）",
+          "insights_summary：取数Skill生成的10条局部解读（压缩版，不含原始数据）",
+          "insights_summary只作为背景参考，不要照抄"
+        ],
+        "task_prune": [
+          "主动剔除低价值图表",
+          "结论与另一张图完全重复时删除",
+          "图表类型不适合数据时删除",
+          "该Tab已有4张图时，删除结论最弱的一张",
+          "输出设计决策备注说明删了哪张、原因是什么"
+        ],
+        "task_global_insight": {
+          "rule": "为每个Tab生成1条全局解读。",
+          "requirements": [
+            "必须跨越至少2个不同维度",
+            "必须包含业务含义或风险信号",
+            "格式：<跨维度发现> + <量化支撑> + <业务含义/风险>",
+            "长度≤60字，2句话"
+          ],
+          "examples_good": [
+            "规模扩张与利润承压并存——2024年销售创新高(+28.7%)，但利润率较2022年峰值下滑2pp，增长质量需持续关注。",
+            "技术类是增长引擎，但格局仍不稳定——设备增速(+38.9%)远超复印机，若设备占比持续提升，技术类利润率结构将发生改变。"
+          ],
+          "examples_bad": [
+            "2024年销售额5,462万，同比增长28.7%。"
+          ]
+        },
+        "layout": [
+          "每Tab顶部：5个KPI卡片",
+          "每屏最多两列（6:4 或 5:5）",
+          "每Tab底部：1个全局解读卡片（橙色左边框，12px）",
+          "Footer：口径说明 + 数据日期"
+        ],
+        "self_check": [
+          "每个Tab有且只有1条全局解读",
+          "全局解读跨越≥2个维度",
+          "全局解读与局部insight无重复（互补，不是重述）",
+          "设计决策备注已列出删除的图表及原因"
+        ]
+      }
+    }
+  },
+  "skills": {
+    "reader_agent": {
+      "display_name": "读数 Agent",
+      "agent_type": "main",
+      "temperature": 0.2,
+      "trigger_conditions": [
+        "用户提供 CSV 或 Excel 数据源",
+        "需要识别字段、时间范围、变量角色和数据规模"
+      ],
+      "input_contract": {
+        "required": ["source_path"],
+        "optional": ["goal"]
+      },
+      "processing_steps": [
+        "尝试用 utf-8-sig、utf-8、gb18030 读取 CSV",
+        "识别数值、文本、分组、因变量和候选解释变量",
+        "解析 发布时间 字段并生成时间范围",
+        "统计字段类型、缺失数量和基础数据画像"
+      ],
+      "output_contract": {
+        "result_fields": [
+          "rows",
+          "columns",
+          "column_names",
+          "column_roles",
+          "missing_by_column",
+          "dtypes",
+          "time_range"
+        ]
+      },
+      "quality_checks": [
+        "数据行数大于 0",
+        "字段数大于 0",
+        "时间字段无法解析数量单独记录",
+        "变量角色只作为初筛，不覆盖人工研究设定"
+      ],
+      "exception_handling": [
+        "读取失败时尝试备用编码",
+        "时间解析失败时保留原字段并记录 invalid_count"
+      ],
+      "prompt_protocol": {
+        "role": "你是资深数据分析师，精通社交媒体传播数据读取、字段画像与统计口径识别。",
+        "task": "读取社交媒体灾害信息传播数据源，完成字段画像、变量角色识别、基础质量画像，并输出可供分析 Skill 使用的数据轮廓。",
+        "constraints": [
+          "不得删除博文ID重复行，重复仅作为观测粒度提示",
+          "不得把高缺失字段直接标记为可建模核心变量",
+          "时间字段必须解析为可排序时间，无法解析数量必须记录",
+          "文本字段只做识别与保留，不在读数阶段做情感或主题重判"
+        ],
+        "data_output": [
+          "基础规模：rows、columns、column_names",
+          "字段角色：outcomes、candidate_predictors、grouping_columns、text、numeric",
+          "缺失画像：missing_by_column",
+          "字段类型：dtypes",
+          "时间范围：time_range"
+        ],
+        "insight_output": {
+          "rule": "读数阶段只输出数据画像解读，不输出分析结论。",
+          "format": "<数据规模/时间范围/字段结构> + <量化数字> + <可分析性信号>",
+          "max_length_cn": 40,
+          "examples_good": [
+            "样本覆盖2,246行、54列，时间横跨12天，可做短期传播分析",
+            "文本、情感、主题和传播结构字段齐备，可支撑多维分析"
+          ],
+          "examples_bad": [
+            "这份数据质量较好",
+            "可以做很多分析"
+          ]
+        },
+        "output_format": {
+          "agent": "reader_agent",
+          "status": "success|failed",
+          "summary": "读取结果摘要",
+          "payload": "{data_profile}",
+          "warnings": []
+        },
+        "self_check": [
+          "数据行数>0",
+          "字段数>0",
+          "时间范围已记录",
+          "字段角色包含 outcomes 与 grouping_columns",
+          "每条画像解读包含至少一个具体数字"
+        ]
+      }
+    },
+    "validator_agent": {
+      "display_name": "数据核验 Agent",
+      "agent_type": "governance",
+      "temperature": 0.1,
+      "trigger_conditions": [
+        "读数完成后",
+        "分析结论需要判断数据支撑时"
+      ],
+      "input_contract": {
+        "required": ["dataframe"],
+        "optional": ["reader_profile"]
+      },
+      "processing_steps": [
+        "检查字段缺失率",
+        "检查博文ID重复情况",
+        "检查点赞、评论、转发、粉丝等非负字段",
+        "检查二元变量是否只有 0/1",
+        "检查发布时间解析范围"
+      ],
+      "output_contract": {
+        "result_fields": [
+          "quality_gate",
+          "missing_rates",
+          "high_missing",
+          "duplicate_post_ids",
+          "duplicate_note",
+          "negative_value_counts",
+          "binary_issues",
+          "time_issues"
+        ]
+      },
+      "quality_checks": [
+        "高缺失字段不自动进入核心模型",
+        "博文ID重复不自动删除，先判断观测粒度",
+        "异常取值必须进入 warnings"
+      ],
+      "exception_handling": [
+        "字段不存在时跳过对应检查",
+        "发现高风险问题时输出 pass_with_warnings"
+      ],
+      "prompt_protocol": {
+        "role": "你是数据质量审计师，负责检查社交媒体传播数据是否足以支持后续分析。",
+        "task": "对读数结果进行缺失、重复、取值范围、时间范围和二元变量核验，输出质量门禁和风险提示。",
+        "constraints": [
+          "禁止把博文ID重复直接等同于脏数据",
+          "缺失率≥30%的字段必须进入 high_missing",
+          "负数传播指标必须进入异常计数",
+          "核验结果只说明数据风险，不做业务建议"
+        ],
+        "output_format": {
+          "quality_gate": "pass|pass_with_warnings|failed",
+          "high_missing": "{column: missing_rate}",
+          "duplicate_post_ids": "int",
+          "duplicate_note": "string|null",
+          "warnings": []
+        },
+        "self_check": [
+          "缺失率已按字段输出",
+          "重复博文ID已量化",
+          "时间字段异常数量已记录",
+          "二元变量非法值已检查",
+          "warnings 与 quality_gate 一致"
+        ]
+      }
+    },
+    "analyst_agent": {
+      "display_name": "分析 Agent",
+      "agent_type": "main",
+      "temperature": 0.35,
+      "trigger_conditions": [
+        "数据通过基础核验后",
+        "需要描述性统计、分组比较、相关性或回归方向初筛"
+      ],
+      "input_contract": {
+        "required": ["dataframe", "validation"],
+        "optional": ["goal", "column_roles"]
+      },
+      "processing_steps": [
+        "优先选择 ln转发量 作为传播表现指标",
+        "按主题类别、情感极性、官方媒体等维度分组汇总",
+        "生成每日总转发量趋势",
+        "计算候选变量与传播指标的 Pearson 相关",
+        "运行轻量 OLS 作为论文建模方向初筛"
+      ],
+      "output_contract": {
+        "result_fields": [
+          "metric",
+          "findings",
+          "topic_summary",
+          "sentiment_summary",
+          "media_summary",
+          "daily_summary",
+          "correlations",
+          "ols",
+          "insights"
+        ]
+      },
+      "quality_checks": [
+        "关键发现必须能追溯到分组表、相关性或模型结果",
+        "OLS 结果必须标注轻量探索性质",
+        "样本不足或变量无变化时跳过模型"
+      ],
+      "exception_handling": [
+        "目标变量不存在时降级使用转发量",
+        "模型样本不足时返回 skipped 并说明原因"
+      ],
+      "prompt_protocol": {
+        "role": "你是资深社交媒体数据分析师，精通传播指标聚合、分组比较、情感主题解读和回归方向初筛。",
+        "task": "围绕传播表现指标完成多个分析数据集，并为每个关键数据集输出1条局部数据解读。",
+        "constraints": [
+          "核心传播指标优先使用 ln转发量；原始趋势可使用转发量",
+          "局部解读只做统计事实陈述，不做策略建议",
+          "回归仅作为探索方向，必须标注轻量 OLS",
+          "不得基于高缺失字段生成强结论",
+          "不得把相关性表述为因果"
+        ],
+        "data_output": [
+          "主题类别传播表现",
+          "情感极性传播表现",
+          "官方媒体传播表现",
+          "富媒体传播表现",
+          "每日转发趋势",
+          "候选变量相关性",
+          "轻量 OLS 回归结果"
+        ],
+        "insight_output": {
+          "rule": "每个关键数据集聚合完成后，立即生成1条局部解读。",
+          "format": "<最显著的变化> + <量化数字> + <方向信号>",
+          "scope": "只做统计事实陈述，不做策略建议。",
+          "max_length_cn": 35,
+          "forbidden_words": ["较好", "较差", "明显", "一定程度上", "有所", "可能说明"],
+          "required_keys": [
+            "topic",
+            "sentiment",
+            "media",
+            "rich_media",
+            "daily",
+            "correlation",
+            "ols"
+          ],
+          "examples_good": [
+            "求助信息ln转发量均值2.996，居四类主题第一",
+            "消极内容ln转发量均值2.904，高于中立0.115",
+            "2025-09-24总转发19,420，为观察期峰值"
+          ],
+          "examples_bad": [
+            "求助信息传播表现较好",
+            "消极内容可能更吸引关注"
+          ]
+        },
+        "output_format": {
+          "data": {
+            "topic_summary": "主题类别传播表现",
+            "sentiment_summary": "情感极性传播表现",
+            "media_summary": "官方媒体传播表现",
+            "rich_media_summary": "富媒体传播表现",
+            "daily_summary": "每日转发趋势",
+            "correlations": "候选变量相关性",
+            "ols": "轻量 OLS"
+          },
+          "insights": {
+            "topic": "xxx",
+            "sentiment": "xxx",
+            "media": "xxx",
+            "rich_media": "xxx",
+            "daily": "xxx",
+            "correlation": "xxx",
+            "ols": "xxx"
+          }
+        },
+        "self_check": [
+          "每条局部 insight 包含至少一个具体数字",
+          "所有局部 insight 长度≤35字",
+          "局部 insight 不包含模糊词",
+          "回归结论没有因果表述",
+          "高缺失字段没有被用作强结论"
+        ]
+      }
+    },
+    "chart_agent": {
+      "display_name": "制图 Agent",
+      "agent_type": "main",
+      "temperature": 0.45,
+      "trigger_conditions": [
+        "分析 Agent 已生成分组汇总或时间趋势",
+        "需要将结果转成可视化图表"
+      ],
+      "input_contract": {
+        "required": ["analysis", "output_dir"],
+        "optional": ["insights"]
+      },
+      "processing_steps": [
+        "为主题、情感、官方媒体生成分组柱状图",
+        "为每日总转发量生成趋势图",
+        "使用 SVG 输出，避免依赖本地图形库",
+        "记录每张图表的标题和路径"
+      ],
+      "output_contract": {
+        "result_fields": ["charts"]
+      },
+      "quality_checks": [
+        "至少生成 1 张图表",
+        "图表标题必须说明指标和分组维度",
+        "图表路径必须写入结果状态"
+      ],
+      "exception_handling": [
+        "某个汇总为空时跳过对应图表",
+        "输出目录不存在时自动创建"
+      ],
+      "prompt_protocol": {
+        "role": "你是 ECharts 5.x 与 SVG 可视化工程师，遵循克制、清晰、可解释的分析图表规范。",
+        "input": [
+          "data：来自分析 Skill 的数据集",
+          "insights：来自分析 Skill 的局部解读",
+          "insights 已由分析 Skill 验证，直接使用，不重新计算或改写"
+        ],
+        "task": "为每个核心数据集生成图表配置或 SVG 图表。",
+        "title_rule": [
+          "图表主标题优先使用对应 insight 文本",
+          "图表副标题为数据来源或分析维度",
+          "禁止使用只有描述、没有结论的标题"
+        ],
+        "chart_type_rules": [
+          "时序数据 → 折线图/面积图（禁用饼图）",
+          "类别对比≤5类 → 纵向柱状图",
+          "类别对比≥6类 → 横向条形图（禁用饼图）",
+          "量+率同时展示 → 双Y轴组合（柱+线）",
+          "多维度趋势对比 → 多折线（禁用堆叠柱）"
+        ],
+        "axis_rules": [
+          "柱状图Y轴从0开始",
+          "Y轴最大值 = 数据最大值 × 1.2",
+          "双Y轴右轴min/max必须独立设置",
+          "月度或日度点数>24时，X轴标签降采样显示"
+        ],
+        "color_palette": {
+          "primary": ["#003366", "#0073CF", "#5AB4E0"],
+          "accent": ["#E63329", "#F7941D", "#00A551"],
+          "neutral": ["#66727A", "#D9D7CD"],
+          "rule": "图表主视觉颜色必须来自以上色板"
+        },
+        "label_rules": [
+          "最多标注3个关键点：最新值、峰值、基准对比值",
+          "fontWeight:'bold'，fontSize:12",
+          "数据点>20时关闭逐点标注"
+        ],
+        "output_format": {
+          "charts": [
+            {
+              "dataset_key": "topic",
+              "title": "insight原文",
+              "subtitle": "数据来源/分析维度",
+              "chart_type": "bar|line|combo",
+              "path_or_option": "图表路径或ECharts option"
+            }
+          ]
+        },
+        "self_check": [
+          "每张图标题是结论句并含数字",
+          "Y轴最大值 > 数据最大值",
+          "双Y轴右轴min/max已独立设置",
+          "所有颜色在规范色板内",
+          "未使用饼图承载多类别对比"
+        ]
+      }
+    },
+    "design_agent": {
+      "display_name": "设计 Agent",
+      "agent_type": "main",
+      "temperature": 0.65,
+      "trigger_conditions": [
+        "读数、核验、分析、制图和问题处理完成后",
+        "需要生成面向阅读和汇报的报告"
+      ],
+      "input_contract": {
+        "required": ["harness_state", "agent_results"],
+        "optional": ["skill_cards", "insights_summary"]
+      },
+      "processing_steps": [
+        "组织数据概览、核验、关键发现、分组表现和模型结果",
+        "链接图表产物",
+        "写入问题处理建议和 Agent 运行记录",
+        "生成 Markdown 报告"
+      ],
+      "output_contract": {
+        "result_fields": ["report_path", "dashboard_path", "design_decisions", "global_insights"]
+      },
+      "quality_checks": [
+        "报告必须包含数据规模、质量门禁和关键发现",
+        "图表链接必须相对输出目录可访问",
+        "论文风险提示不能遗漏"
+      ],
+      "exception_handling": [
+        "无图表时仍生成文字报告",
+        "无处理建议时写入暂无额外处理建议"
+      ],
+      "prompt_protocol": {
+        "role": "你是数据报告设计师 + 业务分析顾问，负责报告组装和全局解读。",
+        "input": [
+          "charts：来自制图 Skill 的图表产物",
+          "insights_summary：分析 Skill 生成的局部解读压缩版",
+          "validation：数据核验和问题处理建议",
+          "注意：insights_summary 只作为背景参考，不要照抄"
+        ],
+        "task_prune": {
+          "rule": "主动剔除低价值图表。",
+          "delete_if_any": [
+            "结论与另一张图完全重复（同维度、同时间范围）",
+            "图表类型不适合数据",
+            "该Tab已有4张图时，删除结论最弱的一张"
+          ],
+          "output": "设计决策备注，说明删了哪张、原因是什么"
+        },
+        "task_global_insight": {
+          "rule": "为每个 Tab 或报告章节生成1条全局解读。",
+          "requirements": [
+            "必须跨越至少2个不同维度",
+            "必须包含业务含义、研究含义或风险信号",
+            "格式：<跨维度发现> + <量化支撑> + <业务含义/风险>",
+            "长度≤60字，2句话",
+            "不得与局部 insight 重复"
+          ],
+          "examples_good": [
+            "求助信息传播强度居首，且消极内容均值高于中立。灾害语境下，需求表达与负向情绪共同抬升扩散强度。",
+            "结构性病毒性与ln转发量相关最高，粉丝规模影响次之。传播结构变量比账号体量更贴近扩散结果。"
+          ],
+          "examples_bad": [
+            "求助信息ln转发量均值2.996，居四类主题第一。"
+          ]
+        },
+        "layout": [
+          "每个页面顶部展示核心 KPI 卡片",
+          "每屏最多两列（6:4 或 5:5）",
+          "每个主题块底部放置1个全局解读卡片",
+          "全局解读卡片使用橙色左边框",
+          "Footer 包含口径说明 + 数据日期"
+        ],
+        "output_format": {
+          "design_decisions": [
+            {
+              "chart": "图表名称",
+              "decision": "keep|delete",
+              "reason": "原因"
+            }
+          ],
+          "global_insights": {
+            "overview": "xxx",
+            "content": "xxx",
+            "model": "xxx"
+          },
+          "report_path": "social_media_analysis_report.md",
+          "dashboard_path": "social_media_analysis_dashboard.html"
+        },
+        "self_check": [
+          "每个Tab或章节有且只有1条全局解读",
+          "全局解读跨越≥2个维度",
+          "全局解读与局部 insight 互补，不是重述",
+          "设计决策备注已列出删除或保留原因",
+          "页面包含口径说明和数据日期"
+        ]
+      }
+    },
+    "temp_control_agent": {
+      "display_name": "模型温度控制 Agent",
+      "agent_type": "governance",
+      "temperature": 0.1,
+      "trigger_conditions": [
+        "每个需要模型推理的 agent 执行前",
+        "需要记录不同任务的稳定性和创造性策略"
+      ],
+      "input_contract": {
+        "required": ["target_agent", "skill_cards"],
+        "optional": []
+      },
+      "processing_steps": [
+        "从 skill_cards 中读取目标 agent 的 temperature",
+        "如果没有配置则使用默认值 0.3",
+        "把温度策略写入 AgentResult"
+      ],
+      "output_contract": {
+        "result_fields": ["target_agent", "temperature", "policy"]
+      },
+      "quality_checks": [
+        "核验和读数类任务保持低温",
+        "设计类任务允许更高温度",
+        "策略必须可追溯到配置"
+      ],
+      "exception_handling": [
+        "目标 agent 未配置时使用默认温度",
+        "配置温度非法时回退到 0.3"
+      ],
+      "prompt_protocol": {
+        "role": "你是模型推理策略控制器，负责为不同 Agent 分配温度和稳定性策略。",
+        "task": "根据 skill_cards 中的 temperature 字段，为目标 Agent 输出模型温度。",
+        "constraints": [
+          "读数、核验、质量检查使用低温",
+          "分析使用中低温",
+          "制图和设计可使用中温到中高温",
+          "温度必须来自配置，不得另行发明策略"
+        ],
+        "output_format": {
+          "target_agent": "xxx",
+          "temperature": 0.3,
+          "policy": "{agent: temperature}"
+        },
+        "self_check": [
+          "target_agent 已记录",
+          "temperature 为数字",
+          "policy 可追溯到 skill_cards",
+          "未配置时回退到0.3"
+        ]
+      }
+    },
+    "resolver_agent": {
+      "display_name": "问题处理 Agent",
+      "agent_type": "governance",
+      "temperature": 0.3,
+      "trigger_conditions": [
+        "核验结果包含 warnings",
+        "分析结果需要降级说明或论文风险提示"
+      ],
+      "input_contract": {
+        "required": ["validation", "analysis"],
+        "optional": []
+      },
+      "processing_steps": [
+        "把高缺失字段转成建模处理建议",
+        "把博文ID重复转成观测粒度建议",
+        "把轻量 OLS 转成正式论文模型升级建议"
+      ],
+      "output_contract": {
+        "result_fields": ["actions"]
+      },
+      "quality_checks": [
+        "每条建议必须包含 issue、handling 和 severity",
+        "高风险问题不能静默通过",
+        "处理建议不能虚构数据中不存在的问题"
+      ],
+      "exception_handling": [
+        "没有问题时输出空 actions",
+        "缺少 validation 或 analysis 字段时降级输出通用建议"
+      ],
+      "prompt_protocol": {
+        "role": "你是数据分析流程的问题处理专家，负责把核验风险转化为可执行处理建议。",
+        "task": "基于 validation 与 analysis 输出问题处理建议、降级说明和论文建模风险提示。",
+        "constraints": [
+          "只处理已经被数据或核验结果支持的问题",
+          "不得虚构数据质量问题",
+          "不得提出脱离当前数据结构的复杂方案",
+          "建议必须服务于后续分析或报告解释"
+        ],
+        "output_format": {
+          "actions": [
+            {
+              "issue": "问题",
+              "handling": "处理方式",
+              "severity": "low|medium|high"
+            }
+          ]
+        },
+        "self_check": [
+          "每条 action 包含 issue、handling、severity",
+          "高缺失字段已有处理建议",
+          "观测粒度风险已有处理建议",
+          "轻量 OLS 已提示正式模型升级"
+        ]
+      }
+    }
+  }
+}

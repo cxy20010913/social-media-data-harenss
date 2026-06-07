@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520">
+  <rect width="100%" height="100%" fill="#fbfbf8"/>
+  <text x="450.0" y="34" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#1f2933">不同主题类别的ln转发量均值</text>
+  <line x1="86" y1="428" x2="852" y2="428" stroke="#9aa3a8" stroke-width="1"/>
+  <line x1="86" y1="64" x2="86" y2="428" stroke="#9aa3a8" stroke-width="1"/>
+  <rect x="86.0" y="64.0" width="178.0" height="364.0" fill="#2f6f73" rx="3"/>
+  <text x="175.0" y="56.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#24323a">3.00</text>
+  <text x="175.0" y="454" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#24323a">求助信息</text>
+  <text x="175.0" y="473" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#6b7479">n=16</text>
+  <rect x="282.0" y="67.6" width="178.0" height="360.4" fill="#c96f45" rx="3"/>
+  <text x="371.0" y="59.6" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#24323a">2.97</text>
+  <text x="371.0" y="454" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#24323a">意见信息</text>
+  <text x="371.0" y="473" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#6b7479">n=127</text>
+  <rect x="478.0" y="84.3" width="178.0" height="343.7" fill="#7567a8" rx="3"/>
+  <text x="567.0" y="76.3" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#24323a">2.83</text>
+  <text x="567.0" y="454" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#24323a">情绪信息</text>
+  <text x="567.0" y="473" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#6b7479">n=155</text>
+  <rect x="674.0" y="85.4" width="178.0" height="342.6" fill="#d29d2b" rx="3"/>
+  <text x="763.0" y="77.4" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#24323a">2.82</text>
+  <text x="763.0" y="454" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#24323a">消息信息</text>
+  <text x="763.0" y="473" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#6b7479">n=1948</text>
+  <text x="26" y="74" font-family="Arial, sans-serif" font-size="13" fill="#56636a">均值</text>
+</svg>

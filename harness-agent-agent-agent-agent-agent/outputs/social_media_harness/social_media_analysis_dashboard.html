@@ -1,0 +1,580 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>社交媒体数据分析 Harness Dashboard</title>
+  <style>
+    :root {
+      --bg: #f7f6f1;
+      --paper: #ffffff;
+      --ink: #1f2933;
+      --muted: #66727a;
+      --line: #d9d7cd;
+      --teal: #2f6f73;
+      --rust: #c96f45;
+      --violet: #7567a8;
+      --gold: #d29d2b;
+      --soft: #ece8dc;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Microsoft YaHei", "PingFang SC", "Segoe UI", Arial, sans-serif;
+      line-height: 1.55;
+    }
+    main {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 56px;
+    }
+    header {
+      border-bottom: 1px solid var(--line);
+      padding: 18px 0 22px;
+    }
+    h1 {
+      margin: 0 0 10px;
+      font-size: 34px;
+      line-height: 1.18;
+      letter-spacing: 0;
+    }
+    h2 {
+      margin: 34px 0 14px;
+      font-size: 22px;
+      letter-spacing: 0;
+    }
+    h3 {
+      margin: 0 0 12px;
+      font-size: 17px;
+      letter-spacing: 0;
+    }
+    p { margin: 0; }
+    .subtitle {
+      max-width: 880px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+    .source {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      word-break: break-all;
+    }
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(130px, 1fr));
+      gap: 10px;
+      margin: 22px 0 6px;
+    }
+    .kpi {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px 14px 12px;
+      min-height: 92px;
+    }
+    .kpi span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .kpi strong {
+      display: block;
+      margin-top: 8px;
+      font-size: 24px;
+      line-height: 1.1;
+    }
+    .kpi.accent-a { border-top: 4px solid var(--teal); }
+    .kpi.accent-b { border-top: 4px solid var(--rust); }
+    .kpi.accent-c { border-top: 4px solid var(--violet); }
+    .kpi.accent-d { border-top: 4px solid var(--gold); }
+    .two-col {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(300px, 0.72fr);
+      gap: 18px;
+      align-items: start;
+    }
+    .panel {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+    }
+    .finding-list {
+      margin: 0;
+      padding-left: 20px;
+    }
+    .finding-list li { margin: 8px 0; }
+    .warning-list, .agent-list, .action-list, .temp-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .warning-list li, .temp-list li {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--soft);
+    }
+    .warning-list li:last-child, .temp-list li:last-child { border-bottom: 0; }
+    .note {
+      margin-top: 14px;
+      padding: 12px;
+      background: #f4efe5;
+      border-left: 4px solid var(--rust);
+      color: #4f3c2f;
+      border-radius: 4px;
+    }
+    .chart-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+    .chart-panel {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      overflow: hidden;
+    }
+    .svg-box {
+      width: 100%;
+      overflow-x: auto;
+    }
+    .svg-box svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      min-width: 540px;
+    }
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 620px;
+    }
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--soft);
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+    th {
+      background: #edeae1;
+      font-weight: 700;
+      color: #26343b;
+    }
+    tr:last-child td { border-bottom: 0; }
+    .model-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 0 0 12px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 30px;
+      padding: 4px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--paper);
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .pill strong { color: var(--ink); }
+    .action-list li, .agent-list li {
+      display: grid;
+      grid-template-columns: 170px minmax(0, 1fr) 80px;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--soft);
+      align-items: start;
+    }
+    .agent-list li {
+      grid-template-columns: 120px minmax(0, 1fr);
+    }
+    .action-list li:last-child, .agent-list li:last-child { border-bottom: 0; }
+    .agent-name {
+      font-weight: 700;
+      color: var(--teal);
+    }
+    .agent-summary, .action-list span {
+      color: var(--muted);
+    }
+    .action-list em {
+      justify-self: end;
+      font-style: normal;
+      color: var(--rust);
+      font-weight: 700;
+    }
+    .empty {
+      color: var(--muted);
+      padding: 12px 0;
+    }
+    footer {
+      margin-top: 36px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+    }
+    @media (max-width: 920px) {
+      .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .two-col, .chart-grid { grid-template-columns: 1fr; }
+      .action-list li { grid-template-columns: 1fr; }
+      .action-list em { justify-self: start; }
+      h1 { font-size: 28px; }
+    }
+    @media (max-width: 560px) {
+      main { width: min(100% - 20px, 1180px); padding-top: 14px; }
+      .kpis { grid-template-columns: 1fr; }
+      .panel, .chart-panel { padding: 14px; }
+      th, td { padding: 8px 10px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>社交媒体数据分析 Harness Dashboard</h1>
+      <p class="subtitle">社交媒体灾害信息传播数据的描述性分析、核验、图表生成和回归方向初筛</p>
+      <p class="source">数据源：C:\Users\cxy\Desktop\个人资料\毕业论文\硕士论文\数据\计算博文表_用于回归.csv</p>
+    </header>
+
+    <section class="kpis" aria-label="核心指标">
+      <div class="kpi accent-a"><span>样本量</span><strong>2,246</strong></div>
+      <div class="kpi accent-b"><span>字段数</span><strong>54</strong></div>
+      <div class="kpi accent-c"><span>质量门禁</span><strong>pass_with_warnings</strong></div>
+      <div class="kpi accent-d"><span>重复博文ID</span><strong>1,976</strong></div>
+      <div class="kpi accent-a"><span>图表数量</span><strong>4</strong></div>
+      <div class="kpi accent-b"><span>分析目标变量</span><strong>ln转发量</strong></div>
+    </section>
+
+    <section class="two-col">
+      <div>
+        <h2>关键发现</h2>
+        <div class="panel">
+          <ol class="finding-list"><li>按ln转发量均值看，求助信息类内容传播表现最高，均值为 2.996。</li><li>按情感极性分组，消极内容的ln转发量均值最高。</li><li>总转发量峰值出现在 2025-09-24，当天总转发量为 19420。</li><li>与ln转发量相关性最高的变量是 结构性病毒性，相关系数 0.4363。</li></ol>
+        </div>
+      </div>
+      <div>
+        <h2>数据核验</h2>
+        <div class="panel">
+          <ul class="warning-list"><li><strong>发布者IP</strong><span>62.3%</span></li><li><strong>是否广东</strong><span>100.0%</span></li></ul>
+          <p class="note">博文ID存在大量重复。结合结构性病毒性、门槛等字段判断，该表可能是一篇博文对应多条传播结构观测，重复不应直接删除。</p>
+          <p class="source">时间范围：2025-09-20 02:08:30 至 2025-10-01 15:06:00</p>
+        </div>
+      </div>
+    </section>
+
+    <h2>图表</h2>
+    <div class="chart-grid">
+        <section class="chart-panel">
+          <h3>不同主题类别的ln转发量均值</h3>
+          <div class="svg-box"><svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520">
+  <rect width="100%" height="100%" fill="#fbfbf8"/>
+  <text x="450.0" y="34" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#1f2933">不同主题类别的ln转发量均值</text>
+  <line x1="86" y1="428" x2="852" y2="428" stroke="#9aa3a8" stroke-width="1"/>
+  <line x1="86" y1="64" x2="86" y2="428" stroke="#9aa3a8" stroke-width="1"/>
+  <rect x="86.0" y="64.0" width="178.0" height="364.0" fill="#2f6f73" rx="3"/>
+  <text x="175.0" y="56.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#24323a">3.00</text>
+  <text x="175.0" y="454" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#24323a">求助信息</text>
+  <text x="175.0" y="473" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#6b7479">n=16</text>
+  <rect x="282.0" y="67.6" width="178.0" height="360.4" fill="#c96f45" rx="3"/>
+  <text x="371.0" y="59.6" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#24323a">2.97</text>
+  <text x="371.0" y="454" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#24323a">意见信息</text>
+  <text x="371.0" y="473" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#6b7479">n=127</text>
+  <rect x="478.0" y="84.3" width="178.0" height="343.7" fill="#7567a8" rx="3"/>
+  <text x="567.0" y="76.3" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#24323a">2.83</text>
+  <text x="567.0" y="454" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#24323a">情绪信息</text>
+  <text x="567.0" y="473" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#6b7479">n=155</text>
+  <rect x="674.0" y="85.4" width="178.0" height="342.6" fill="#d29d2b" rx="3"/>
+  <text x="763.0" y="77.4" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#24323a">2.82</text>
+  <text x="763.0" y="454" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#24323a">消息信息</text>
+  <text x="763.0" y="473" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#6b7479">n=1948</text>
+  <text x="26" y="74" font-family="Arial, sans-serif" font-size="13" fill="#56636a">均值</text>
+</svg>
+</div>
+        </section>
+        
+        <section class="chart-panel">
+          <h3>不同情感极性的ln转发量均值</h3>
+          <div class="svg-box"><svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520">
+  <rect width="100%" height="100%" fill="#fbfbf8"/>
+  <text x="450.0" y="34" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#1f2933">不同情感极性的ln转发量均值</text>
+  <line x1="86" y1="428" x2="852" y2="428" stroke="#9aa3a8" stroke-width="1"/>
+  <line x1="86" y1="64" x2="86" y2="428" stroke="#9aa3a8" stroke-width="1"/>
+  <rect x="86.0" y="64.0" width="243.3" height="364.0" fill="#2f6f73" rx="3"/>
+  <text x="207.7" y="56.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#24323a">2.90</text>
+  <text x="207.7" y="454" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#24323a">消极</text>
+  <text x="207.7" y="473" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#6b7479">n=476</text>
+  <rect x="347.3" y="71.9" width="243.3" height="356.1" fill="#c96f45" rx="3"/>
+  <text x="469.0" y="63.9" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#24323a">2.84</text>
+  <text x="469.0" y="454" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#24323a">积极</text>
+  <text x="469.0" y="473" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#6b7479">n=732</text>
+  <rect x="608.7" y="78.4" width="243.3" height="349.6" fill="#7567a8" rx="3"/>
+  <text x="730.3" y="70.4" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#24323a">2.79</text>
+  <text x="730.3" y="454" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#24323a">中立</text>
+  <text x="730.3" y="473" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#6b7479">n=1038</text>
+  <text x="26" y="74" font-family="Arial, sans-serif" font-size="13" fill="#56636a">均值</text>
+</svg>
+</div>
+        </section>
+        
+        <section class="chart-panel">
+          <h3>官方媒体与非官方媒体的ln转发量均值</h3>
+          <div class="svg-box"><svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520">
+  <rect width="100%" height="100%" fill="#fbfbf8"/>
+  <text x="450.0" y="34" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#1f2933">官方媒体与非官方媒体的ln转发量均值</text>
+  <line x1="86" y1="428" x2="852" y2="428" stroke="#9aa3a8" stroke-width="1"/>
+  <line x1="86" y1="64" x2="86" y2="428" stroke="#9aa3a8" stroke-width="1"/>
+  <rect x="86.0" y="64.0" width="374.0" height="364.0" fill="#2f6f73" rx="3"/>
+  <text x="273.0" y="56.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#24323a">2.95</text>
+  <text x="273.0" y="454" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#24323a">0</text>
+  <text x="273.0" y="473" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#6b7479">n=847</text>
+  <rect x="478.0" y="88.2" width="374.0" height="339.8" fill="#c96f45" rx="3"/>
+  <text x="665.0" y="80.2" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#24323a">2.76</text>
+  <text x="665.0" y="454" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#24323a">1</text>
+  <text x="665.0" y="473" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#6b7479">n=1399</text>
+  <text x="26" y="74" font-family="Arial, sans-serif" font-size="13" fill="#56636a">均值</text>
+</svg>
+</div>
+        </section>
+        
+        <section class="chart-panel">
+          <h3>每日总转发量趋势</h3>
+          <div class="svg-box"><svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520">
+  <rect width="100%" height="100%" fill="#fbfbf8"/>
+  <text x="450.0" y="34" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#1f2933">每日总转发量趋势</text>
+  <line x1="86" y1="428" x2="852" y2="428" stroke="#9aa3a8" stroke-width="1"/>
+  <line x1="86" y1="64" x2="86" y2="428" stroke="#9aa3a8" stroke-width="1"/>
+  <polyline points="86.0,381.4 155.6,334.9 225.3,116.9 294.9,132.8 364.5,64.0 434.2,234.9 503.8,346.7 573.5,385.1 643.1,408.8 712.7,424.8 782.4,426.4 852.0,425.7" fill="none" stroke="#2f6f73" stroke-width="3"/>
+  <circle cx="86.0" cy="381.4" r="4" fill="#c96f45"/>
+  <text x="86.0" y="454" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#24323a">09-20</text>
+  <circle cx="155.6" cy="334.9" r="4" fill="#c96f45"/>
+  <circle cx="225.3" cy="116.9" r="4" fill="#c96f45"/>
+  <text x="225.3" y="454" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#24323a">09-22</text>
+  <circle cx="294.9" cy="132.8" r="4" fill="#c96f45"/>
+  <circle cx="364.5" cy="64.0" r="4" fill="#c96f45"/>
+  <text x="364.5" y="454" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#24323a">09-24</text>
+  <circle cx="434.2" cy="234.9" r="4" fill="#c96f45"/>
+  <circle cx="503.8" cy="346.7" r="4" fill="#c96f45"/>
+  <text x="503.8" y="454" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#24323a">09-26</text>
+  <circle cx="573.5" cy="385.1" r="4" fill="#c96f45"/>
+  <circle cx="643.1" cy="408.8" r="4" fill="#c96f45"/>
+  <text x="643.1" y="454" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#24323a">09-28</text>
+  <circle cx="712.7" cy="424.8" r="4" fill="#c96f45"/>
+  <circle cx="782.4" cy="426.4" r="4" fill="#c96f45"/>
+  <text x="782.4" y="454" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#24323a">09-30</text>
+  <circle cx="852.0" cy="425.7" r="4" fill="#c96f45"/>
+  <text x="852.0" y="454" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#24323a">10-01</text>
+  <text x="20" y="74" font-family="Arial, sans-serif" font-size="13" fill="#56636a">总转发量</text>
+</svg>
+</div>
+        </section>
+        </div>
+
+    <h2>分组表现</h2>
+    <section class="two-col">
+      <div class="panel">
+        <h3>主题类别</h3>
+        
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>主题</th><th>样本数</th><th>均值</th><th>中位数</th><th>合计</th></tr></thead>
+        <tbody><tr><td>求助信息</td><td>16</td><td>2.996</td><td>2.99</td><td>47.93</td></tr><tr><td>意见信息</td><td>127</td><td>2.966</td><td>2.94</td><td>376.68</td></tr><tr><td>情绪信息</td><td>155</td><td>2.829</td><td>2.48</td><td>438.43</td></tr><tr><td>消息信息</td><td>1,948</td><td>2.82</td><td>2.48</td><td>5,494.24</td></tr></tbody>
+      </table>
+    </div>
+    
+      </div>
+      <div class="panel">
+        <h3>情感极性</h3>
+        
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>情感</th><th>样本数</th><th>均值</th><th>中位数</th><th>合计</th></tr></thead>
+        <tbody><tr><td>消极</td><td>476</td><td>2.904</td><td>2.56</td><td>1,382.51</td></tr><tr><td>积极</td><td>732</td><td>2.841</td><td>2.48</td><td>2,079.5</td></tr><tr><td>中立</td><td>1,038</td><td>2.789</td><td>2.48</td><td>2,895.27</td></tr></tbody>
+      </table>
+    </div>
+    
+      </div>
+    </section>
+    <section class="panel" style="margin-top: 18px;">
+      <h3>官方媒体</h3>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>是否官方媒体</th><th>样本数</th><th>均值</th><th>中位数</th><th>合计</th></tr></thead>
+        <tbody><tr><td>0</td><td>847</td><td>2.953</td><td>2.71</td><td>2,500.82</td></tr><tr><td>1</td><td>1,399</td><td>2.757</td><td>2.4</td><td>3,856.46</td></tr></tbody>
+      </table>
+    </div>
+    
+    </section>
+
+    <h2>相关性与轻量回归</h2>
+    <section class="two-col">
+      <div class="panel">
+        <h3>相关性 Top 10</h3>
+        
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>变量</th><th>Pearson相关</th><th>样本数</th></tr></thead>
+        <tbody><tr><td>结构性病毒性</td><td>0.436</td><td>2,246</td></tr><tr><td>门槛和</td><td>0.162</td><td>2,246</td></tr><tr><td>ln粉丝数</td><td>0.138</td><td>2,246</td></tr><tr><td>是否官方媒体</td><td>-0.095</td><td>2,246</td></tr><tr><td>是否北上广</td><td>0.069</td><td>2,246</td></tr><tr><td>是否受灾地IP</td><td>0.06</td><td>2,246</td></tr><tr><td>情感强度</td><td>0.058</td><td>2,246</td></tr><tr><td>有无视频</td><td>0.05</td><td>2,246</td></tr><tr><td>发布者是否认证</td><td>-0.048</td><td>2,246</td></tr><tr><td>是否消极</td><td>0.038</td><td>2,246</td></tr></tbody>
+      </table>
+    </div>
+    
+      </div>
+      <div class="panel">
+        <h3>模型摘要</h3>
+        <div class="model-meta">
+          <span class="pill">目标变量 <strong>ln转发量</strong></span>
+          <span class="pill">有效样本 <strong>2,246</strong></span>
+          <span class="pill">R² <strong>0.2548</strong></span>
+        </div>
+        <p class="note">轻量 OLS 用于探索方向；正式论文建议用稳健标准误、固定效应或更完整模型复核。</p>
+      </div>
+    </section>
+    <section class="panel" style="margin-top: 18px;">
+      <h3>回归系数</h3>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>变量</th><th>系数</th><th>标准误</th><th>t值</th></tr></thead>
+        <tbody><tr><td>截距</td><td>-1.766</td><td>0.285</td><td>-6.206</td></tr><tr><td>ln粉丝数</td><td>0.079</td><td>0.009</td><td>8.453</td></tr><tr><td>发布者是否认证</td><td>-0.743</td><td>0.173</td><td>-4.299</td></tr><tr><td>是否官方媒体</td><td>-0.362</td><td>0.044</td><td>-8.18</td></tr><tr><td>有无图片</td><td>-0.105</td><td>0.039</td><td>-2.683</td></tr><tr><td>有无视频</td><td>0.1</td><td>0.09</td><td>1.103</td></tr><tr><td>标签数量</td><td>0.017</td><td>0.019</td><td>0.892</td></tr><tr><td>情感强度</td><td>0.014</td><td>0.004</td><td>3.005</td></tr><tr><td>是否积极</td><td>-0.08</td><td>0.054</td><td>-1.471</td></tr><tr><td>是否消极</td><td>0.004</td><td>0.056</td><td>0.062</td></tr><tr><td>结构性病毒性</td><td>2.498</td><td>0.132</td><td>18.895</td></tr><tr><td>门槛和</td><td>0.051</td><td>0.006</td><td>7.893</td></tr><tr><td>平均门槛</td><td>-0.836</td><td>0.103</td><td>-8.098</td></tr></tbody>
+      </table>
+    </div>
+    
+    </section>
+
+    <h2>问题处理建议</h2>
+    <section class="panel">
+      <ul class="action-list">
+        <li>
+          <strong>发布者IP 缺失率较高</strong>
+          <span>默认不进入核心模型；若论文需要该变量，应单独说明缺失机制或改用缺失指示变量。</span>
+          <em>medium</em>
+        </li>
+        
+        <li>
+          <strong>是否广东 缺失率较高</strong>
+          <span>默认不进入核心模型；若论文需要该变量，应单独说明缺失机制或改用缺失指示变量。</span>
+          <em>high</em>
+        </li>
+        
+        <li>
+          <strong>博文ID大量重复</strong>
+          <span>将观测粒度标记为传播结构观测；正式建模前需决定是否聚合到博文层级。</span>
+          <em>high</em>
+        </li>
+        
+        <li>
+          <strong>当前回归为轻量 OLS</strong>
+          <span>用于方向初筛；论文结果建议增加稳健标准误、控制变量、固定效应和共线性检查。</span>
+          <em>medium</em>
+        </li>
+        </ul>
+    </section>
+
+    <h2>Agent 运行记录</h2>
+    <section class="two-col">
+      <div class="panel">
+        <h3>主流程</h3>
+        <ul class="agent-list">
+        <li>
+          <span class="agent-name">读数</span>
+          <span class="agent-summary">读取 2,246 行、55 列，并完成字段角色识别。</span>
+        </li>
+        
+        <li>
+          <span class="agent-name">核验</span>
+          <span class="agent-summary">完成缺失、重复、取值范围和时间字段核验。</span>
+        </li>
+        
+        <li>
+          <span class="agent-name">分析</span>
+          <span class="agent-summary">围绕 ln转发量 完成分组、趋势、相关性和轻量回归分析。</span>
+        </li>
+        
+        <li>
+          <span class="agent-name">制图</span>
+          <span class="agent-summary">生成 4 张 SVG 图表。</span>
+        </li>
+        
+        <li>
+          <span class="agent-name">问题处理</span>
+          <span class="agent-summary">生成 4 条问题处理建议。</span>
+        </li>
+        
+        <li>
+          <span class="agent-name">设计</span>
+          <span class="agent-summary">生成面向论文探索的中文 Markdown 报告。</span>
+        </li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h3>温度策略</h3>
+        <ul class="temp-list">
+        <li>
+          <span>reader_agent</span>
+          <strong>0.2</strong>
+        </li>
+        
+        <li>
+          <span>validator_agent</span>
+          <strong>0.1</strong>
+        </li>
+        
+        <li>
+          <span>analyst_agent</span>
+          <strong>0.35</strong>
+        </li>
+        
+        <li>
+          <span>chart_agent</span>
+          <strong>0.45</strong>
+        </li>
+        
+        <li>
+          <span>resolver_agent</span>
+          <strong>0.3</strong>
+        </li>
+        
+        <li>
+          <span>design_agent</span>
+          <strong>0.65</strong>
+        </li>
+        </ul>
+      </div>
+    </section>
+
+    <h2>Skill 配置摘要</h2>
+    <section class="panel">
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Skill</th><th>Agent 文件</th><th>类型</th><th>温度</th></tr></thead>
+        <tbody><tr><td>读数 Agent</td><td>reader_agent</td><td>main</td><td>0.2</td></tr><tr><td>数据核验 Agent</td><td>validator_agent</td><td>governance</td><td>0.1</td></tr><tr><td>分析 Agent</td><td>analyst_agent</td><td>main</td><td>0.35</td></tr><tr><td>制图 Agent</td><td>chart_agent</td><td>main</td><td>0.45</td></tr><tr><td>设计 Agent</td><td>design_agent</td><td>main</td><td>0.65</td></tr><tr><td>模型温度控制 Agent</td><td>temp_control_agent</td><td>governance</td><td>0.1</td></tr><tr><td>问题处理 Agent</td><td>resolver_agent</td><td>governance</td><td>0.3</td></tr></tbody>
+      </table>
+    </div>
+    
+      <p class="source">完整配置见输出目录中的 skill_cards.json。</p>
+    </section>
+
+    <footer>
+      由本地 Harness 自动生成。正式论文建模前，建议继续补充稳健标准误、固定效应、共线性检查和观测粒度确认。
+    </footer>
+  </main>
+</body>
+</html>

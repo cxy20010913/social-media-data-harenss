@@ -1,0 +1,841 @@
+{
+  "results": [
+    {
+      "agent": "temp_control_agent",
+      "status": "success",
+      "summary": "为 reader_agent 分配温度 0.2。",
+      "payload": {
+        "target_agent": "reader_agent",
+        "temperature": 0.2,
+        "policy": {
+          "reader_agent": 0.2,
+          "validator_agent": 0.1,
+          "analyst_agent": 0.35,
+          "chart_agent": 0.45,
+          "design_agent": 0.65,
+          "temp_control_agent": 0.1,
+          "resolver_agent": 0.3
+        }
+      },
+      "warnings": []
+    },
+    {
+      "agent": "reader_agent",
+      "status": "success",
+      "summary": "读取 2,246 行、55 列，并完成字段角色识别。",
+      "payload": {
+        "source_path": "C:\\Users\\cxy\\Desktop\\个人资料\\毕业论文\\硕士论文\\数据\\计算博文表_用于回归.csv",
+        "rows": 2246,
+        "columns": 54,
+        "column_names": [
+          "发布者ID",
+          "发布者昵称",
+          "发布者关注数",
+          "发布者粉丝数",
+          "ln粉丝数",
+          "发布者是否认证",
+          "发布者IP",
+          "有无IP",
+          "是否官方媒体",
+          "是否受灾地IP",
+          "是否北上广",
+          "是否北上",
+          "是否广东",
+          "发布博文",
+          "博文ID",
+          "发布时间",
+          "点赞量",
+          "评论量",
+          "转发量",
+          "ln转发量",
+          "图片数量",
+          "有无图片",
+          "有无视频",
+          "标签数量",
+          "有无富媒体",
+          "ln图片数",
+          "ln标签数",
+          "文本",
+          "正面情感得分",
+          "负面情感得分",
+          "情感综合得分",
+          "情感强度",
+          "ln情感强度",
+          "情感极性",
+          "是否积极",
+          "是否消极",
+          "结构性病毒性",
+          "转发数",
+          "门槛和",
+          "平均门槛",
+          "asinh平均门槛",
+          "0门槛占比",
+          "ln结构性病毒性",
+          "ln结构性病毒性平方",
+          "ln门槛和",
+          "ln门槛和平方",
+          "ln平均门槛",
+          "ln0门槛占比",
+          "ln0门槛占比平方",
+          "主题类别",
+          "是否消息信息",
+          "是否情绪信息",
+          "是否意见信息",
+          "是否求助信息"
+        ],
+        "column_roles": {
+          "numeric": [
+            "发布者ID",
+            "发布者关注数",
+            "发布者粉丝数",
+            "ln粉丝数",
+            "发布者是否认证",
+            "有无IP",
+            "是否官方媒体",
+            "是否受灾地IP",
+            "是否北上广",
+            "是否北上",
+            "是否广东",
+            "博文ID",
+            "点赞量",
+            "评论量",
+            "转发量",
+            "ln转发量",
+            "图片数量",
+            "有无图片",
+            "有无视频",
+            "标签数量",
+            "有无富媒体",
+            "ln图片数",
+            "ln标签数",
+            "正面情感得分",
+            "负面情感得分",
+            "情感综合得分",
+            "情感强度",
+            "ln情感强度",
+            "是否积极",
+            "是否消极",
+            "结构性病毒性",
+            "转发数",
+            "门槛和",
+            "平均门槛",
+            "asinh平均门槛",
+            "0门槛占比",
+            "ln结构性病毒性",
+            "ln结构性病毒性平方",
+            "ln门槛和",
+            "ln门槛和平方",
+            "ln平均门槛",
+            "ln0门槛占比",
+            "ln0门槛占比平方",
+            "是否消息信息",
+            "是否情绪信息",
+            "是否意见信息",
+            "是否求助信息"
+          ],
+          "categorical": [],
+          "text": [
+            "发布者昵称",
+            "发布者IP",
+            "发布博文",
+            "文本",
+            "情感极性",
+            "主题类别"
+          ],
+          "outcomes": [
+            "转发量",
+            "ln转发量",
+            "结构性病毒性",
+            "ln结构性病毒性"
+          ],
+          "candidate_predictors": [
+            "ln粉丝数",
+            "发布者是否认证",
+            "是否官方媒体",
+            "是否受灾地IP",
+            "是否北上广",
+            "有无图片",
+            "有无视频",
+            "标签数量",
+            "情感强度",
+            "是否积极",
+            "是否消极",
+            "门槛和",
+            "平均门槛",
+            "0门槛占比"
+          ],
+          "grouping_columns": [
+            "主题类别",
+            "情感极性",
+            "是否官方媒体",
+            "有无富媒体",
+            "有无图片"
+          ]
+        },
+        "missing_by_column": {
+          "发布者ID": 0,
+          "发布者昵称": 0,
+          "发布者关注数": 0,
+          "发布者粉丝数": 0,
+          "ln粉丝数": 0,
+          "发布者是否认证": 0,
+          "发布者IP": 1399,
+          "有无IP": 0,
+          "是否官方媒体": 0,
+          "是否受灾地IP": 0,
+          "是否北上广": 0,
+          "是否北上": 0,
+          "是否广东": 2245,
+          "发布博文": 0,
+          "博文ID": 0,
+          "发布时间": 0,
+          "点赞量": 0,
+          "评论量": 0,
+          "转发量": 0,
+          "ln转发量": 0,
+          "图片数量": 0,
+          "有无图片": 0,
+          "有无视频": 0,
+          "标签数量": 0,
+          "有无富媒体": 0,
+          "ln图片数": 0,
+          "ln标签数": 0,
+          "文本": 0,
+          "正面情感得分": 0,
+          "负面情感得分": 0,
+          "情感综合得分": 0,
+          "情感强度": 0,
+          "ln情感强度": 0,
+          "情感极性": 0,
+          "是否积极": 0,
+          "是否消极": 0,
+          "结构性病毒性": 0,
+          "转发数": 0,
+          "门槛和": 0,
+          "平均门槛": 0,
+          "asinh平均门槛": 0,
+          "0门槛占比": 0,
+          "ln结构性病毒性": 0,
+          "ln结构性病毒性平方": 0,
+          "ln门槛和": 0,
+          "ln门槛和平方": 0,
+          "ln平均门槛": 0,
+          "ln0门槛占比": 0,
+          "ln0门槛占比平方": 0,
+          "主题类别": 0,
+          "是否消息信息": 0,
+          "是否情绪信息": 0,
+          "是否意见信息": 0,
+          "是否求助信息": 0
+        },
+        "dtypes": {
+          "发布者ID": "int64",
+          "发布者昵称": "str",
+          "发布者关注数": "int64",
+          "发布者粉丝数": "int64",
+          "ln粉丝数": "float64",
+          "发布者是否认证": "int64",
+          "发布者IP": "str",
+          "有无IP": "int64",
+          "是否官方媒体": "int64",
+          "是否受灾地IP": "int64",
+          "是否北上广": "int64",
+          "是否北上": "int64",
+          "是否广东": "float64",
+          "发布博文": "str",
+          "博文ID": "float64",
+          "发布时间": "str",
+          "点赞量": "int64",
+          "评论量": "int64",
+          "转发量": "int64",
+          "ln转发量": "float64",
+          "图片数量": "int64",
+          "有无图片": "int64",
+          "有无视频": "int64",
+          "标签数量": "int64",
+          "有无富媒体": "int64",
+          "ln图片数": "float64",
+          "ln标签数": "float64",
+          "文本": "str",
+          "正面情感得分": "int64",
+          "负面情感得分": "int64",
+          "情感综合得分": "int64",
+          "情感强度": "int64",
+          "ln情感强度": "float64",
+          "情感极性": "str",
+          "是否积极": "int64",
+          "是否消极": "int64",
+          "结构性病毒性": "float64",
+          "转发数": "int64",
+          "门槛和": "int64",
+          "平均门槛": "float64",
+          "asinh平均门槛": "float64",
+          "0门槛占比": "float64",
+          "ln结构性病毒性": "float64",
+          "ln结构性病毒性平方": "float64",
+          "ln门槛和": "float64",
+          "ln门槛和平方": "float64",
+          "ln平均门槛": "float64",
+          "ln0门槛占比": "float64",
+          "ln0门槛占比平方": "float64",
+          "主题类别": "str",
+          "是否消息信息": "int64",
+          "是否情绪信息": "int64",
+          "是否意见信息": "int64",
+          "是否求助信息": "int64"
+        },
+        "time_range": {
+          "min": "2025-09-20 02:08:30",
+          "max": "2025-10-01 15:06:00",
+          "invalid_count": 0
+        }
+      },
+      "warnings": []
+    },
+    {
+      "agent": "temp_control_agent",
+      "status": "success",
+      "summary": "为 validator_agent 分配温度 0.1。",
+      "payload": {
+        "target_agent": "validator_agent",
+        "temperature": 0.1,
+        "policy": {
+          "reader_agent": 0.2,
+          "validator_agent": 0.1,
+          "analyst_agent": 0.35,
+          "chart_agent": 0.45,
+          "design_agent": 0.65,
+          "temp_control_agent": 0.1,
+          "resolver_agent": 0.3
+        }
+      },
+      "warnings": []
+    },
+    {
+      "agent": "validator_agent",
+      "status": "success",
+      "summary": "完成缺失、重复、取值范围和时间字段核验。",
+      "payload": {
+        "row_count": 2246,
+        "missing_rates": {
+          "发布者IP": 0.6229,
+          "是否广东": 0.9996
+        },
+        "high_missing": {
+          "发布者IP": 0.6229,
+          "是否广东": 0.9996
+        },
+        "duplicate_post_ids": 1976,
+        "duplicate_note": "博文ID存在大量重复。结合结构性病毒性、门槛等字段判断，该表可能是一篇博文对应多条传播结构观测，重复不应直接删除。",
+        "negative_value_counts": {
+          "点赞量": 0,
+          "评论量": 0,
+          "转发量": 0,
+          "发布者粉丝数": 0,
+          "发布者关注数": 0
+        },
+        "time_issues": {
+          "invalid_time_count": 0,
+          "min_time": "2025-09-20 02:08:30",
+          "max_time": "2025-10-01 15:06:00"
+        },
+        "binary_issues": {
+          "有无富媒体": [
+            2
+          ]
+        },
+        "quality_gate": "pass_with_warnings"
+      },
+      "warnings": [
+        "高缺失字段：发布者IP, 是否广东",
+        "博文ID重复较多，后续分析需明确观测粒度。"
+      ]
+    },
+    {
+      "agent": "temp_control_agent",
+      "status": "success",
+      "summary": "为 analyst_agent 分配温度 0.35。",
+      "payload": {
+        "target_agent": "analyst_agent",
+        "temperature": 0.35,
+        "policy": {
+          "reader_agent": 0.2,
+          "validator_agent": 0.1,
+          "analyst_agent": 0.35,
+          "chart_agent": 0.45,
+          "design_agent": 0.65,
+          "temp_control_agent": 0.1,
+          "resolver_agent": 0.3
+        }
+      },
+      "warnings": []
+    },
+    {
+      "agent": "analyst_agent",
+      "status": "success",
+      "summary": "围绕 ln转发量 完成分组、趋势、相关性和轻量回归分析。",
+      "payload": {
+        "metric": "ln转发量",
+        "findings": [
+          "按ln转发量均值看，求助信息类内容传播表现最高，均值为 2.996。",
+          "按情感极性分组，消极内容的ln转发量均值最高。",
+          "总转发量峰值出现在 2025-09-24，当天总转发量为 19420。",
+          "与ln转发量相关性最高的变量是 结构性病毒性，相关系数 0.4363。"
+        ],
+        "topic_summary": [
+          {
+            "group": "求助信息",
+            "posts": 16,
+            "mean": 2.996,
+            "median": 2.99,
+            "total": 47.93
+          },
+          {
+            "group": "意见信息",
+            "posts": 127,
+            "mean": 2.966,
+            "median": 2.94,
+            "total": 376.68
+          },
+          {
+            "group": "情绪信息",
+            "posts": 155,
+            "mean": 2.829,
+            "median": 2.48,
+            "total": 438.43
+          },
+          {
+            "group": "消息信息",
+            "posts": 1948,
+            "mean": 2.82,
+            "median": 2.48,
+            "total": 5494.24
+          }
+        ],
+        "sentiment_summary": [
+          {
+            "group": "消极",
+            "posts": 476,
+            "mean": 2.904,
+            "median": 2.56,
+            "total": 1382.51
+          },
+          {
+            "group": "积极",
+            "posts": 732,
+            "mean": 2.841,
+            "median": 2.48,
+            "total": 2079.5
+          },
+          {
+            "group": "中立",
+            "posts": 1038,
+            "mean": 2.789,
+            "median": 2.48,
+            "total": 2895.27
+          }
+        ],
+        "media_summary": [
+          {
+            "group": "0",
+            "posts": 847,
+            "mean": 2.953,
+            "median": 2.71,
+            "total": 2500.82
+          },
+          {
+            "group": "1",
+            "posts": 1399,
+            "mean": 2.757,
+            "median": 2.4,
+            "total": 3856.46
+          }
+        ],
+        "rich_media_summary": [
+          {
+            "group": "2",
+            "posts": 107,
+            "mean": 3.056,
+            "median": 2.77,
+            "total": 327.01
+          },
+          {
+            "group": "0",
+            "posts": 1174,
+            "mean": 2.82,
+            "median": 2.48,
+            "total": 3310.6
+          },
+          {
+            "group": "1",
+            "posts": 965,
+            "mean": 2.818,
+            "median": 2.48,
+            "total": 2719.67
+          }
+        ],
+        "daily_summary": [
+          {
+            "date": "2025-09-20",
+            "posts": 85,
+            "mean_reposts": 29.2471,
+            "total_reposts": 2486
+          },
+          {
+            "date": "2025-09-21",
+            "posts": 206,
+            "mean_reposts": 24.1117,
+            "total_reposts": 4967
+          },
+          {
+            "date": "2025-09-22",
+            "posts": 424,
+            "mean_reposts": 39.1486,
+            "total_reposts": 16599
+          },
+          {
+            "date": "2025-09-23",
+            "posts": 450,
+            "mean_reposts": 34.9933,
+            "total_reposts": 15747
+          },
+          {
+            "date": "2025-09-24",
+            "posts": 536,
+            "mean_reposts": 36.2313,
+            "total_reposts": 19420
+          },
+          {
+            "date": "2025-09-25",
+            "posts": 314,
+            "mean_reposts": 32.8025,
+            "total_reposts": 10300
+          },
+          {
+            "date": "2025-09-26",
+            "posts": 135,
+            "mean_reposts": 32.1185,
+            "total_reposts": 4336
+          },
+          {
+            "date": "2025-09-27",
+            "posts": 35,
+            "mean_reposts": 65.4571,
+            "total_reposts": 2291
+          },
+          {
+            "date": "2025-09-28",
+            "posts": 39,
+            "mean_reposts": 26.2821,
+            "total_reposts": 1025
+          },
+          {
+            "date": "2025-09-29",
+            "posts": 10,
+            "mean_reposts": 17.1,
+            "total_reposts": 171
+          },
+          {
+            "date": "2025-09-30",
+            "posts": 7,
+            "mean_reposts": 12.1429,
+            "total_reposts": 85
+          },
+          {
+            "date": "2025-10-01",
+            "posts": 5,
+            "mean_reposts": 24.2,
+            "total_reposts": 121
+          }
+        ],
+        "correlations": [
+          {
+            "variable": "结构性病毒性",
+            "pearson_corr": 0.4363,
+            "n": 2246
+          },
+          {
+            "variable": "门槛和",
+            "pearson_corr": 0.1615,
+            "n": 2246
+          },
+          {
+            "variable": "ln粉丝数",
+            "pearson_corr": 0.1379,
+            "n": 2246
+          },
+          {
+            "variable": "是否官方媒体",
+            "pearson_corr": -0.0945,
+            "n": 2246
+          },
+          {
+            "variable": "是否北上广",
+            "pearson_corr": 0.0687,
+            "n": 2246
+          },
+          {
+            "variable": "是否受灾地IP",
+            "pearson_corr": 0.0602,
+            "n": 2246
+          },
+          {
+            "variable": "情感强度",
+            "pearson_corr": 0.0579,
+            "n": 2246
+          },
+          {
+            "variable": "有无视频",
+            "pearson_corr": 0.0502,
+            "n": 2246
+          },
+          {
+            "variable": "发布者是否认证",
+            "pearson_corr": -0.0482,
+            "n": 2246
+          },
+          {
+            "variable": "是否消极",
+            "pearson_corr": 0.0381,
+            "n": 2246
+          },
+          {
+            "variable": "标签数量",
+            "pearson_corr": 0.0311,
+            "n": 2246
+          },
+          {
+            "variable": "0门槛占比",
+            "pearson_corr": 0.0192,
+            "n": 2246
+          },
+          {
+            "variable": "平均门槛",
+            "pearson_corr": -0.0153,
+            "n": 2246
+          },
+          {
+            "variable": "有无图片",
+            "pearson_corr": 0.011,
+            "n": 2246
+          },
+          {
+            "variable": "是否积极",
+            "pearson_corr": 0.0072,
+            "n": 2246
+          }
+        ],
+        "ols": {
+          "status": "success",
+          "target": "ln转发量",
+          "n": 2246,
+          "r_squared": 0.2548,
+          "coefficients": [
+            {
+              "variable": "截距",
+              "coef": -1.7664,
+              "std_err": 0.2846,
+              "t": -6.206
+            },
+            {
+              "variable": "ln粉丝数",
+              "coef": 0.0793,
+              "std_err": 0.0094,
+              "t": 8.453
+            },
+            {
+              "variable": "发布者是否认证",
+              "coef": -0.7434,
+              "std_err": 0.1729,
+              "t": -4.299
+            },
+            {
+              "variable": "是否官方媒体",
+              "coef": -0.362,
+              "std_err": 0.0443,
+              "t": -8.18
+            },
+            {
+              "variable": "有无图片",
+              "coef": -0.1055,
+              "std_err": 0.0393,
+              "t": -2.683
+            },
+            {
+              "variable": "有无视频",
+              "coef": 0.0999,
+              "std_err": 0.0905,
+              "t": 1.103
+            },
+            {
+              "variable": "标签数量",
+              "coef": 0.0166,
+              "std_err": 0.0186,
+              "t": 0.892
+            },
+            {
+              "variable": "情感强度",
+              "coef": 0.0137,
+              "std_err": 0.0045,
+              "t": 3.005
+            },
+            {
+              "variable": "是否积极",
+              "coef": -0.0802,
+              "std_err": 0.0545,
+              "t": -1.471
+            },
+            {
+              "variable": "是否消极",
+              "coef": 0.0035,
+              "std_err": 0.0557,
+              "t": 0.062
+            },
+            {
+              "variable": "结构性病毒性",
+              "coef": 2.4978,
+              "std_err": 0.1322,
+              "t": 18.895
+            },
+            {
+              "variable": "门槛和",
+              "coef": 0.0509,
+              "std_err": 0.0064,
+              "t": 7.893
+            },
+            {
+              "variable": "平均门槛",
+              "coef": -0.836,
+              "std_err": 0.1032,
+              "t": -8.098
+            }
+          ],
+          "note": "轻量 OLS 用于探索方向；正式论文建议用稳健标准误、固定效应或更完整模型复核。"
+        }
+      },
+      "warnings": []
+    },
+    {
+      "agent": "temp_control_agent",
+      "status": "success",
+      "summary": "为 chart_agent 分配温度 0.45。",
+      "payload": {
+        "target_agent": "chart_agent",
+        "temperature": 0.45,
+        "policy": {
+          "reader_agent": 0.2,
+          "validator_agent": 0.1,
+          "analyst_agent": 0.35,
+          "chart_agent": 0.45,
+          "design_agent": 0.65,
+          "temp_control_agent": 0.1,
+          "resolver_agent": 0.3
+        }
+      },
+      "warnings": []
+    },
+    {
+      "agent": "chart_agent",
+      "status": "success",
+      "summary": "生成 4 张 SVG 图表。",
+      "payload": {
+        "charts": [
+          {
+            "title": "不同主题类别的ln转发量均值",
+            "path": "outputs\\social_media_harness\\charts\\topic_mean_reposts.svg"
+          },
+          {
+            "title": "不同情感极性的ln转发量均值",
+            "path": "outputs\\social_media_harness\\charts\\sentiment_mean_reposts.svg"
+          },
+          {
+            "title": "官方媒体与非官方媒体的ln转发量均值",
+            "path": "outputs\\social_media_harness\\charts\\media_mean_reposts.svg"
+          },
+          {
+            "title": "每日总转发量趋势",
+            "path": "outputs\\social_media_harness\\charts\\daily_total_reposts.svg"
+          }
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "agent": "temp_control_agent",
+      "status": "success",
+      "summary": "为 resolver_agent 分配温度 0.3。",
+      "payload": {
+        "target_agent": "resolver_agent",
+        "temperature": 0.3,
+        "policy": {
+          "reader_agent": 0.2,
+          "validator_agent": 0.1,
+          "analyst_agent": 0.35,
+          "chart_agent": 0.45,
+          "design_agent": 0.65,
+          "temp_control_agent": 0.1,
+          "resolver_agent": 0.3
+        }
+      },
+      "warnings": []
+    },
+    {
+      "agent": "resolver_agent",
+      "status": "success",
+      "summary": "生成 4 条问题处理建议。",
+      "payload": {
+        "actions": [
+          {
+            "issue": "发布者IP 缺失率较高",
+            "handling": "默认不进入核心模型；若论文需要该变量，应单独说明缺失机制或改用缺失指示变量。",
+            "severity": "medium"
+          },
+          {
+            "issue": "是否广东 缺失率较高",
+            "handling": "默认不进入核心模型；若论文需要该变量，应单独说明缺失机制或改用缺失指示变量。",
+            "severity": "high"
+          },
+          {
+            "issue": "博文ID大量重复",
+            "handling": "将观测粒度标记为传播结构观测；正式建模前需决定是否聚合到博文层级。",
+            "severity": "high"
+          },
+          {
+            "issue": "当前回归为轻量 OLS",
+            "handling": "用于方向初筛；论文结果建议增加稳健标准误、控制变量、固定效应和共线性检查。",
+            "severity": "medium"
+          }
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "agent": "temp_control_agent",
+      "status": "success",
+      "summary": "为 design_agent 分配温度 0.65。",
+      "payload": {
+        "target_agent": "design_agent",
+        "temperature": 0.65,
+        "policy": {
+          "reader_agent": 0.2,
+          "validator_agent": 0.1,
+          "analyst_agent": 0.35,
+          "chart_agent": 0.45,
+          "design_agent": 0.65,
+          "temp_control_agent": 0.1,
+          "resolver_agent": 0.3
+        }
+      },
+      "warnings": []
+    },
+    {
+      "agent": "design_agent",
+      "status": "success",
+      "summary": "生成面向论文探索的中文 Markdown 报告。",
+      "payload": {
+        "report_path": "outputs\\social_media_harness\\social_media_analysis_report.md"
+      },
+      "warnings": []
+    }
+  ]
+}
